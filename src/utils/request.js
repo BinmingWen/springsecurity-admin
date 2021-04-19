@@ -1,7 +1,7 @@
 import axios from 'axios'
-import {Message, MessageBox} from 'element-ui'
+import { Message, MessageBox } from 'element-ui'
 import store from '../store'
-import {getToken} from '@/utils/auth'
+import { getToken } from '@/utils/auth'
 
 // 创建axios实例
 const http1 = axios.create({
@@ -59,4 +59,4 @@ http1.interceptors.response.use(
   }
 )
 
-export { http1,http2 }
+export { http1, http2 }

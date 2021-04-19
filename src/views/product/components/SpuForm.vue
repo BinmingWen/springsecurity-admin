@@ -90,6 +90,8 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页组件 -->
+
     </div>
 
     <!--按钮-->
@@ -121,7 +123,7 @@ export default {
     return {
 
       // 接口API地址
-      BASE_API: process.env.BASE_API,
+      BASE_API: 'http://127.0.0.1:8081',
 
       // 基本销售属性列表
       baseSaleAttrList: [],
@@ -145,8 +147,11 @@ export default {
       // 图片预览区域url
       dialogImageUrl: '',
       // 图片预览对话框
-      dialogImageVisible: false
+      dialogImageVisible: false,
 
+      total: 0, // 数据库中的总记录数
+      page: 1, // 默认页码
+      limit: 10, // 每页记录数
     }
   },
 

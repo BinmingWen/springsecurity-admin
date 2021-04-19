@@ -4,9 +4,9 @@ const request = http2
 export default {
 
   // 根据三级分类id获取属性列表
-  getSpuList(catalog3Id) {
+  getSpuList(catalog3Id, page, limit) {
     return request({
-      url: 'spuList?catalog3Id=' + catalog3Id,
+      url: 'spuList?catalog3Id=' + catalog3Id + '&page=' + page + '&limit=' + limit,
       method: 'get'
     })
   },
@@ -42,5 +42,14 @@ export default {
       url: 'spuImageList?spuId=' + spuId,
       method: 'get'
     })
-  }
+  },
+
+  //更新spu商品信息
+  updateSpu(spuInfo) {
+    return request({
+      url: 'updateSpuInfo',
+      method: 'post',
+      data: spuInfo
+    })
+  },
 }

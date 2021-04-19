@@ -2,7 +2,6 @@ import { http1 } from '@/utils/request'
 
 const api_name = '/admin/acl/user'
 const request = http1
-
 export default {
 
     getPageList(page, limit, searchObj) {

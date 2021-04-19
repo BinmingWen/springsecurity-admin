@@ -28,9 +28,9 @@ export default {
   },
 
   // 根据三级分类id获取属性列表
-  getAttrInfoList(catalog3Id) {
+  getAttrInfoList(catalog3Id, page, limit) {
     return request({
-      url: 'attrInfoList?catalog3Id=' + catalog3Id,
+      url: 'attrInfoList?catalog3Id=' + catalog3Id + "&page=" + page + "&limit=" + limit,
       method: 'get'
     })
   },
@@ -49,6 +49,21 @@ export default {
       url: 'saveAttrInfo',
       method: 'post',
       data: attrForm
+    })
+  },
+  // 根据属性id删除属性值列表
+  deleteAttrValue(id) {
+    return request({
+      url: 'deleteAttrValue?id=' + id,
+      method: 'get'
+    })
+  },
+  // 更新属性值列表
+  updateAttrInfoName(attrInfo) {
+    return request({
+      url: 'upateAttrInfoName',
+      method: 'post',
+      data: attrInfo
     })
   }
 }

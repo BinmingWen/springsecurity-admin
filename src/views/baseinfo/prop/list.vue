@@ -2,7 +2,7 @@
   <div class="app-container">
 
     <!--三级下拉列表-->
-    <CatalogSelector @listenOnSelect="getAttrInfoList" />
+    <CatalogSelector @listenOnSelect="getAttrInfoList"/>
 
     <!--属性列表-->
     <div v-show="!showAttrInfoForm">
@@ -19,7 +19,7 @@
         highlight-current-row>
         <el-table-column align="center" label="序号" width="100">
           <template slot-scope="scope">
-            {{ scope.$index + 1 }}
+            {{ (page - 1) * limit + scope.$index + 1 }}
           </template>
         </el-table-column>
         <el-table-column label="属性id" width="100">
@@ -33,16 +33,31 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="200" align="center">
+        <el-table-column label="操作" width="500" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" icon="el-icon-edit" @click="editAttrInfoById(scope.row.id, scope.row.attrName)">修改</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-caret-right"
+                       @click="editAttrInfoById(scope.row.id, scope.row.attrName)">更新属性值
+            </el-button>
+            <el-button type="primary" size="mini" icon="el-icon-edit" @click="updateAttrInfo(scope.row.id,scope.row.attrName)">修改</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteAttrInfo(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        :current-page="page"
+        :total="total"
+        :page-size="limit"
+        :page-sizes="[5, 10, 20, 30, 40, 50, 100]"
+        style="padding: 30px 0; text-align: center;"
+        layout="sizes, prev, pager, next, jumper, ->, total, slot"
+        @current-change="fetchData"
+        @size-change="changeSize"
+      />
+
     </div>
 
     <!--属性表单-->
-    <el-form v-show="showAttrInfoForm" :model="attrInfoForm" :inline="true" class="demo-form-inline">
+    <el-form v-show="showAttrInfoValueForm" :model="attrInfoForm" :inline="true" class="demo-form-inline">
 
       <el-form-item label="属性名称">
         <el-input v-model="attrInfoForm.attrName"/>
@@ -76,21 +91,23 @@
             </template> -->
             <template slot-scope="scope">
               <el-input
-                v-if="scope.row.edit"
+                v-if="showInput"
                 v-model="scope.row.valueName"
                 class="edit-input"
                 size="mini"
-                @keyup.enter.native="saveAttrValue(scope.row)"
-                @blur="saveAttrValue(scope.row)" />
+                @keyup.enter.native="saveAttrValue()"
+                @blur="saveAttrValue()"/>
               <span
                 v-else
-                @click="editAttrValue(scope.row)">{{ scope.row.valueName }}</span>
+                @click="editAttrValue">{{ scope.row.valueName }}</span>
             </template>
           </el-table-column>
 
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" icon="el-icon-edit" @click="deleteAttrValueByName(scope.row.valueName)">删除</el-button>
+              <el-button type="danger" size="mini" icon="el-icon-edit"
+                         @click="deleteAttrValueByName(scope.row.valueName, scope.row.id)">删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -102,7 +119,21 @@
         <el-button type="default" size="mini" @click="backToAttrList()">返回</el-button>
       </div>
     </el-form>
+<!--  修改属性值  -->
+    <el-form v-show="showUpdateInfo" :model="attrInfo" :inline="true" class="demo-form-inline" >
+      <div>
+        <span>修改属性名称</span>
+        <el-divider></el-divider>
+      </div>
 
+      <el-form-item label="属性值名称" prop="attrName">
+        <el-input v-model="attrInfo.attrName"/>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="modifyAttrInfo(attrInfo)">更改</el-button>
+        <el-button type="default" @click="backToAttrList()">返回</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -121,6 +152,9 @@ export default {
       // 属性列表数据
       attrInfoList: null,
       attrInfoListLoading: false,
+      showAttrInfoValueForm: false,
+      // 显示更新列表
+      showUpdateInfo: false,
 
       // 属性表单数据
       showAttrInfoForm: false,
@@ -130,20 +164,48 @@ export default {
         attrName: null,
         catalog3Id: null,
         attrValueList: []
-      }
+      },
+      showInput: false,
+
+      attrInfo: {
+        id: null,
+        attrName: null,
+        catalog3Id: null
+      },
+
+      //分页数据变量
+      total: 0, // 数据库中的总记录数
+      page: 1, // 默认页码
+      limit: 10 // 每页记录数
 
     }
   },
 
   methods: {
 
+    // 当页码发生改变的时候
+    changeSize(size) {
+      console.log(size)
+      this.limit = size
+      this.fetchData(1)
+    },
+
+    // 获取属性列表
+    fetchData(page = 1) {
+      console.log('翻页。。。' + page)
+      // 异步获取远程数据（ajax）
+      this.page = page
+      this.getAttrInfoList(this.catalogId)
+    },
+
     // 获取属性列表
     getAttrInfoList(catalogId) {
       this.catalogId = catalogId
       // 查询数据
       this.attrInfoListLoading = true
-      prop.getAttrInfoList(this.catalogId).then(response => {
-        this.attrInfoList = response.data
+      prop.getAttrInfoList(this.catalogId, this.page, this.limit).then(response => {
+        this.attrInfoList = response.data.rows
+        this.total = response.data.total
         this.attrInfoListLoading = false
       })
     },
@@ -187,16 +249,22 @@ export default {
       })
       // 显示表单
       this.showAttrInfoForm = true
+      this.showAttrInfoValueForm = true
+      this.showUpdateInfo = false
     },
 
     // 删除属性值
-    deleteAttrValueByName(attrValueName) {
+    deleteAttrValueByName(attrValueName, id) {
       const tempList = []
       this.attrInfoForm.attrValueList.forEach(attrValue => {
         if (attrValue.valueName !== attrValueName) {
           tempList.push(attrValue)
         }
       })
+      prop.deleteAttrValue(id).then(response => {
+          // console.log(' 删除成功！')
+        }
+      )
       this.attrInfoForm.attrValueList = tempList
     },
 
@@ -214,7 +282,11 @@ export default {
     // 返回属性列表页面
     backToAttrList() {
       // 隐藏表单
+
       this.showAttrInfoForm = false
+      this.showAttrInfoValueForm = false
+      this.showUpdateInfo = false
+      this.getAttrInfoList(this.catalogId)
     },
 
     // 添加属性值
@@ -227,13 +299,33 @@ export default {
     },
 
     // 保存属性值
-    saveAttrValue(row) {
-      row.edit = false
+    saveAttrValue() {
+      this.showInput = false
     },
 
     // 编辑属性值
-    editAttrValue(row) {
-      row.edit = true
+    editAttrValue() {
+      this.showInput = true
+    },
+    updateAttrInfo(id, attrName) {
+      this.showUpdateInfo = true
+      this.attrInfo.id = id
+      this.attrInfo.attrName = attrName
+      this.attrInfo.catalog3Id = this.catalogId
+
+      // 显示表单
+      this.showAttrInfoForm = true
+      this.showAttrInfoValueForm = false
+    },
+    deleteAttrInfo(id) {
+
+    },
+    modifyAttrInfo(attrInfo) {
+      // debugger
+
+      prop.updateAttrInfoName(attrInfo).then( response => {
+        setTimeout(this.backToAttrList(), 5000)
+      })
     }
   }
 }
@@ -243,10 +335,12 @@ export default {
 .edit-input {
   padding-right: 60px;
 }
+
 .save-btn {
   position: absolute;
   right: 15px;
   top: 10px;
 }
+
 </style>
 

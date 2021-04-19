@@ -200,8 +200,9 @@ export default {
     // 获取平台属性列表
     getAttrInfoList() {
       // 查询数据
-      prop.getAttrInfoList(this.catalogId).then(response => {
-        this.attrInfoList = response.data
+      prop.getAttrInfoList(this.catalogId, 0, 0).then(response => {
+        this.attrInfoList = response.data.rows
+        debugger
       })
     },
 
