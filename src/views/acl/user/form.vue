@@ -11,8 +11,18 @@
       <el-form-item label="用户密码" prop="password">
         <el-input v-model="user.password" show-password/>
       </el-form-item>
-
-
+      <el-form-item label="电话" prop="phone">
+        <el-input v-model="user.phone"/>
+      </el-form-item>
+      <el-form-item label="常用地址" prop="address">
+        <div v-if="showAddress">
+          <v-distpicker :placeholders="placeholders" @selected="selectedAddress"></v-distpicker>
+          <el-input v-model="user.address" placeholder="输入详细地址"/>
+        </div>
+        <div v-else>
+          <el-input v-model="user.address" placeholder="输入详细地址" @focus="updateAddress"/>
+        </div>
+      </el-form-item>
       <el-form-item>
         <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOrUpdate">保存</el-button>
       </el-form-item>
@@ -23,11 +33,16 @@
 <script>
 
 import userApi from '@/api/acl/user'
+import VDistpicker from 'v-distpicker'
+
 
 const defaultForm = {
   username: '',
   nickName: '',
   password: '',
+  phone: '',
+  address: '',
+  backAddress: ''
 }
 
 const validatePass = (rule, value, callback) => {
@@ -39,14 +54,22 @@ const validatePass = (rule, value, callback) => {
 }
 
 export default {
+  components: { VDistpicker },
   data() {
     return {
       user: defaultForm,
       saveBtnDisabled: false, // 保存按钮是否禁用,
+      showAddress: false,
       validateRules: {
         username: [{ required: true, trigger: 'blur', message: '用户名必须输入' }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }]
-      }
+      },
+      placeholders: {
+        province: '省份/自治区',
+        city: '城市/地区/自治州',
+        area: '区/县'
+      },
+      addressDetail: ''
     }
   },
 
@@ -93,8 +116,23 @@ export default {
       })
     },
 
+    showDetailAddress() {
+      this.showAddress = false
+    },
+    updateAddress() {
+      this.showAddress = true
+      this.user.address = ''
+    },
+    selectedAddress(data) {
+      console.log(data.area.value)
+      console.log(data.province.value)
+      console.log(data.city.value)
+      this.addressDetail = data.province.value + data.city.value + data.area.value
+    },
     // 新增讲师
     saveData() {
+      this.user.address = this.addressDetail + this.user.address
+      //console.log(this.user.address)
       userApi.save(this.user).then(response => {
         // debugger
         if (response.success) {
@@ -109,6 +147,8 @@ export default {
 
     // 根据id更新记录
     updateData() {
+      // 更新地址值
+      this.user.address = this.addressDetail + this.user.address
       // teacher数据的获取
       userApi.updateById(this.user).then(response => {
         if (response.success) {

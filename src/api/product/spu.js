@@ -44,7 +44,7 @@ export default {
     })
   },
 
-  //更新spu商品信息
+  // 更新spu商品信息
   updateSpu(spuInfo) {
     return request({
       url: 'updateSpuInfo',

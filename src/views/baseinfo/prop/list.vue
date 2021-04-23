@@ -216,12 +216,15 @@ export default {
         return
       }
 
+      debugger
+
       // 初始化值
       this.attrInfoForm.id = null
       this.attrInfoForm.attrName = null
       this.attrInfoForm.attrValueList = []
 
-      // 显示表单
+      // 显示表单 showAttrInfoForm
+      this.showAttrInfoValueForm = true
       this.showAttrInfoForm = true
     },
 
@@ -272,10 +275,7 @@ export default {
     saveAttrInfo() {
       this.attrInfoForm.catalog3Id = this.catalogId
       prop.saveAttrInfo(this.attrInfoForm).then(response => {
-        // 刷新属性列表
-        this.getAttrInfoList(this.catalogId)
-        // 隐藏表单
-        this.showAttrInfoForm = false
+        setTimeout(this.backToAttrList(), 5000)
       })
     },
 
@@ -296,6 +296,7 @@ export default {
         edit: true
       }
       this.attrInfoForm.attrValueList.push(attrValue)
+      this.showInput = true
     },
 
     // 保存属性值
