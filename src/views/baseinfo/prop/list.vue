@@ -39,7 +39,6 @@
                        @click="editAttrInfoById(scope.row.id, scope.row.attrName)">更新属性值
             </el-button>
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="updateAttrInfo(scope.row.id,scope.row.attrName)">修改</el-button>
-            <el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteAttrInfo(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -123,7 +122,8 @@
     <el-form v-show="showUpdateInfo" :model="attrInfo" :inline="true" class="demo-form-inline" >
       <div>
         <span>修改属性名称</span>
-        <el-divider></el-divider>
+        <el-divider/>
+
       </div>
 
       <el-form-item label="属性值名称" prop="attrName">

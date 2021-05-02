@@ -1,12 +1,12 @@
 <template>
   <!--表单-->
-  <el-form :model="spuForm" label-width="70px">
+  <el-form :model="spuForm" label-width="100px">
 
-    <el-form-item label="spu名称">
+    <el-form-item label="商品系列名称">
       <el-input v-model="spuForm.spuName"/>
     </el-form-item>
 
-    <el-form-item label="spu描述">
+    <el-form-item label="商品系列描述">
       <el-input v-model="spuForm.description" :rows="5" type="textarea"/>
     </el-form-item>
 

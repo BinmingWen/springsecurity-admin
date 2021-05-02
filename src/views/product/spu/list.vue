@@ -7,7 +7,7 @@
     <!--spu列表-->
     <div v-show="!showSpuForm && !showSkuForm && !showUpdateInfo">
       <div style="margin-bottom:10px;">
-        <el-button type="primary" icon="el-icon-plus" size="mini" @click="addSpu()">添加SPU</el-button>
+        <el-button type="primary" icon="el-icon-plus" size="mini" @click="addSpu()">添加商品系列</el-button>
       </div>
 
       <el-table
@@ -40,9 +40,8 @@
 
         <el-table-column label="操作" width="300" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" icon="el-icon-plus" @click="addSku(scope.row.id, scope.row.spuName)">添加SKU</el-button>
+            <el-button type="primary" size="mini" icon="el-icon-plus" @click="addSku(scope.row.id, scope.row.spuName)">添加商品</el-button>
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="updateSpu(scope.row.id, scope.row.spuName, scope.row.description)">修改</el-button>
-            <el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteSpu(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -62,8 +61,8 @@
     <!--  修改属性值  -->
     <el-form v-show="showUpdateInfo" :model="spuInfo" :inline="true" class="demo-ruleForm" >
       <div>
-        <span>修改spu</span>
-        <el-divider></el-divider>
+        <span>修改商品</span>
+        <el-divider/>
       </div>
 
       <el-form-item label="商品名称" prop="spuName">
@@ -137,7 +136,7 @@ export default {
         description: null
       },
 
-      //分页数据变量
+      // 分页数据变量
       total: 0, // 数据库中的总记录数
       page: 1, // 默认页码
       limit: 10 // 每页记录数
@@ -248,7 +247,7 @@ export default {
 
     },
     modifySpuInfo(spuInfo) {
-      //console.log(spuInfo)
+      // console.log(spuInfo)
       spu.updateSpu(spuInfo).then(response => {
         setTimeout(this.backToSpuList(), 5000)
       })

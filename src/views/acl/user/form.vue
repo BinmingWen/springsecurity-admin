@@ -35,7 +35,6 @@
 import userApi from '@/api/acl/user'
 import VDistpicker from 'v-distpicker'
 
-
 const defaultForm = {
   username: '',
   nickName: '',
