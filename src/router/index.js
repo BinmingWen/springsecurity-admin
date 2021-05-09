@@ -112,7 +112,7 @@ export const asyncRoutes = [
     ]
   },
 
-  //添加路由
+  // 添加路由
   {
     path: '/baseinfo',
     component: Layout,
@@ -143,7 +143,7 @@ export const asyncRoutes = [
         path: 'spu/list',
         name: 'ProductSpuList',
         component: () => import('@/views/product/spu/list'),
-        meta: { title: '商品属性SPU管理' }
+        meta: { title: '商品管理' }
       }
     ]
   },
